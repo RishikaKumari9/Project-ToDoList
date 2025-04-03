@@ -4,22 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <h1>Task List</h1>
-    <input type="text" id="task" placeholder="Enter task" required>
-    <button id="addTask">Add Task</button>
-    <button id="showAllTasks">Show All Tasks</button>
-    <ul id="taskList">
-        @foreach($tasks as $task)
-            <li data-id="{{ $task->id }}">
-                <input type="checkbox" class="completeTask" {{ $task->is_completed ? 'checked' : '' }}>
-                {{ $task->task }}
-                <button class="deleteTask">Delete</button>
-            </li>
-        @endforeach
-    </ul>
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-6 offset-3">
+                @if ($errors->any())
+                    <div>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <div class="col-md-12">
+                    <h1>Task List</h1>
+                    <input type="text" id="task" placeholder="Enter your task" required>
+                    <button id="addTask" class="btn btn-primary">Add Task</button>
+                </div>
+                <div class="col-md-12 mt-5">
+                    <button id="showAllTasks" class="btn btn-primary">Show All Tasks</button>
+                    <ul id="taskList" style="list-style: none;">
+                        @foreach($tasks as $task)
+                            <li data-id="{{ $task->id }}" class="mt-2">
+                                {{ $task->id }}.
+                                {{ $task->task }}
+                                <button class="deleteTask btn btn-danger">Delete</button>
+                                <input type="checkbox" class="completeTask" {{ $task->is_completed ? 'checked' : '' }}> Complete
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         $(document).ready(function () {
@@ -31,10 +53,11 @@
                     type: 'POST',
                     data: {task: task, _token: '{{ csrf_token() }}'},
                     success: function (data) {
-                        $('#taskList').append(`<li data-id="${data.id}">
-                            <input type="checkbox" class="completeTask">
+                        $('#taskList').append(`<li data-id="${data.id}" class="mt-2">
+                            ${data.id}.
                             ${data.task}
                             <button class="deleteTask">Delete</button>
+                            <input type="checkbox" class="completeTask btn btn-danger"> Complete
                         </li>`);
                         $('#task').val('');
                     }
@@ -72,9 +95,10 @@
                     $('#taskList').empty();
                     data.forEach(task => {
                         $('#taskList').append(`<li data-id="${task.id}">
-                            <input type="checkbox" class="completeTask" ${task.is_completed ? 'checked' : ''}>
+                            ${task.id}.
                             ${task.task}
                             <button class="deleteTask">Delete</button>
+                            <input type="checkbox" class="completeTask btn btn-danger" ${task.is_completed ? 'checked' : ''}> Completed
                         </li>`);
                     });
                 });
